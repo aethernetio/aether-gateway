@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-#include "src/gateway_server.h"
+#include "gateway_server.h"

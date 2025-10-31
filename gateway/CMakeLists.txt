@@ -21,7 +21,7 @@ ae_update_dependencies()
 
 # list a common dependencies
 list(APPEND common_dependencies
-    "../libs/aether"
+    "../libs/aether/aether"
 )
 
 list( APPEND src_list
@@ -31,6 +31,11 @@ list( APPEND src_list
 
 project("aether-gateway-app" VERSION "1.0.0" LANGUAGES C CXX)
 
+foreach(dep ${common_dependencies})
+  get_filename_component(DEP_NAME ${dep} NAME)
+  add_subdirectory(${dep} ${DEP_NAME})
+endforeach()
+  
 add_executable(${PROJECT_NAME} ${src_list})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE aether)
