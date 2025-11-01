@@ -19,8 +19,8 @@ cmake_minimum_required(VERSION 3.16.0)
 #
 
 set(ROOT_REPO_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
-set(AETHER_LIB_DIR "${ROOT_REPO_DIR}/libs/aether")
-set(UPDATED_FILE "${AETHER_LIB_DIR}/.updated")
+set(THIRD_PARTY_DIR "${ROOT_REPO_DIR}/libs/aether/third_party")
+set(UPDATED_FILE "${THIRD_PARTY_DIR}/.updated")
 
 find_program(GIT_EXECUTABLE NAMES git)
 
@@ -48,7 +48,6 @@ function(_ae_submodules_list RESULT_VAR)
     ERROR_QUIET
     OUTPUT_STRIP_TRAILING_WHITESPACE)
   set(${RESULT_VAR} "${output_result}" PARENT_SCOPE)
-  message(STATUS "Submodules is ${output_result}")
 endfunction()
 
 #
@@ -91,12 +90,12 @@ function(_ae_update_third_parties )
   endif()
 
   # apply patches
-  file(GLOB patch_list LIST_DIRECTORIES false RELATIVE "${AETHER_LIB_DIR}" "${AETHER_LIB_DIR}/*.patch")
+  file(GLOB patch_list LIST_DIRECTORIES false RELATIVE "${THIRD_PARTY_DIR}" "${THIRD_PARTY_DIR}/*.patch")
   foreach(patch_file IN LISTS patch_list)
     string(REPLACE ".patch" "" dep_name "${patch_file}")
     message(STATUS "Applying patch to ${dep_name}")
 
-    execute_process(COMMAND "${GIT_EXECUTABLE}" -C "${AETHER_LIB_DIR}/${dep_name}" apply --ignore-whitespace "${AETHER_LIB_DIR}/${patch_file}"
+    execute_process(COMMAND "${GIT_EXECUTABLE}" -C "${THIRD_PARTY_DIR}/${dep_name}" apply --ignore-whitespace "${THIRD_PARTY_DIR}/${patch_file}"
       RESULT_VARIABLE patch_apply_result)
     if (NOT patch_apply_result EQUAL 0 )
       message(FATAL_ERROR "Failed to apply patch ${patch_file}")
@@ -104,16 +103,16 @@ function(_ae_update_third_parties )
   endforeach()
 
   #copy cmake files
-  file(GLOB cmake_files LIST_DIRECTORIES false RELATIVE "${AETHER_LIB_DIR}" "${AETHER_LIB_DIR}/CMakeLists.*")
+  file(GLOB cmake_files LIST_DIRECTORIES false RELATIVE "${THIRD_PARTY_DIR}" "${THIRD_PARTY_DIR}/CMakeLists.*")
   foreach(cmake_file IN LISTS cmake_files)
     string(REPLACE "CMakeLists." "" dep_name "${cmake_file}")
     message(STATUS "Copying cmake file to ${dep_name}")
 
-    if (EXISTS "${AETHER_LIB_DIR}/${dep_name}/CMakeLists.txt")
-      file(REMOVE "${AETHER_LIB_DIR}/${dep_name}/CMakeLists.txt")
+    if (EXISTS "${THIRD_PARTY_DIR}/${dep_name}/CMakeLists.txt")
+      file(REMOVE "${THIRD_PARTY_DIR}/${dep_name}/CMakeLists.txt")
     endif()
-    file(COPY "${AETHER_LIB_DIR}/${cmake_file}" DESTINATION "${AETHER_LIB_DIR}/${dep_name}")
-    file(RENAME "${AETHER_LIB_DIR}/${dep_name}/${cmake_file}" "${AETHER_LIB_DIR}/${dep_name}/CMakeLists.txt")
+    file(COPY "${THIRD_PARTY_DIR}/${cmake_file}" DESTINATION "${THIRD_PARTY_DIR}/${dep_name}")
+    file(RENAME "${THIRD_PARTY_DIR}/${dep_name}/${cmake_file}" "${THIRD_PARTY_DIR}/${dep_name}/CMakeLists.txt")
   endforeach()
 endfunction()
 

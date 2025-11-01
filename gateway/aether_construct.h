@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef SRC_GATEWAY_SERVER_H_
-#define SRC_GATEWAY_SERVER_H_
-
-#include <chrono>
-#include <cstdint>
+#ifndef CLOUD_AETHER_CONSTRUCT_H_
+#define CLOUD_AETHER_CONSTRUCT_H_
 
 #include "aether/all.h"
 
-#endif  // SRC_GATEWAY_SERVER_H_
+namespace ae::gateway_server {
+static RcPtr<AetherApp> construct_aether_app();
+}
+
+#endif  // CLOUD_AETHER_CONSTRUCT_H_
