@@ -65,5 +65,3 @@ int AetherGatewayServer() {
 
   return aether_app->ExitCode();
 }
-
-int main(){return AetherGatewayServer();}
