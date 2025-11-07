@@ -1,0 +1,5 @@
+[submodule "libs/aether"]
+  path = libs/aether
+  url = https://github.com/aethernetio/aether-client-cpp.git
+  branch = main
+  ignore = dirty
