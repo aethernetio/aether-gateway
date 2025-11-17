@@ -27,15 +27,15 @@
 #include "aether/actions/action_ptr.h"
 #include "aether/actions/notify_action.h"
 #include "aether/actions/promise_action.h"
-#include "aether/lora_gateways/lora_gateway_driver_types.h"
+#include "lora_gateways/lora_gateway_driver_types.h"
 
 namespace ae {
 class ILoraGatewayDriver {
  public:
   using LoraGatewayOperation = NotifyAction;
   using WriteOperation = NotifyAction;
-  using OpenNetworkOperation = PromiseAction<ConnectionLoraIndex>;
-  using DataEvent = Event<void(ConnectionLoraIndex, DataBuffer const& data)>;
+  using OpenNetworkOperation = PromiseAction<ConnectionLoraGatewayIndex>;
+  using DataEvent = Event<void(ConnectionLoraGatewayIndex, DataBuffer const& data)>;
 
   virtual ~ILoraGatewayDriver() = default;
 
@@ -45,9 +45,9 @@ class ILoraGatewayDriver {
                                                       std::string const& host,
                                                       std::uint16_t port) = 0;
   virtual ActionPtr<LoraGatewayOperation> CloseNetwork(
-      ConnectionLoraIndex connect_index) = 0;
+      ConnectionLoraGatewayIndex connect_index) = 0;
   virtual ActionPtr<LoraGatewayOperation> WritePacket(
-      ConnectionLoraIndex connect_index, DataBuffer const& data) = 0;
+      ConnectionLoraGatewayIndex connect_index, DataBuffer const& data) = 0;
   virtual DataEvent::Subscriber data_event() = 0;
 
   virtual ActionPtr<LoraGatewayOperation> SetPowerSaveParam(

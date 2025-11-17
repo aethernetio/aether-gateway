@@ -27,7 +27,7 @@
 #include "aether/serial_ports/iserial_port.h"
 #include "aether/serial_ports/at_support/at_support.h"
 
-#include "aether/lora_modules/ilora_module_driver.h"
+#include "lora_gateways/ilora_gateway_driver.h"
 
 namespace ae {
 class DxSmartLr02TcpOpenNetwork;
@@ -44,7 +44,7 @@ static const std::map<kBaudRate, std::string> baud_rate_commands_lr02 = {
     {kBaudRate::kBaudRate115200, "AT+BAUD8"},
     {kBaudRate::kBaudRate128000, "AT+BAUD9"}};
 
-class DxSmartLr02LoraGateway final : public ILoraGateway Driver {
+class DxSmartLr02LoraGateway final : public ILoraGatewayDriver {
   friend class DxSmartLr02TcpOpenNetwork;
   friend class DxSmartLr02UdpOpenNetwork;
   static constexpr std::uint16_t kLoraGatewayMTU{400};
@@ -52,7 +52,7 @@ class DxSmartLr02LoraGateway final : public ILoraGateway Driver {
  public:
   explicit DxSmartLr02LoraGateway(ActionContext action_context,
                                  IPoller::ptr const& poller,
-                                 LoraModuleInit lora_module_init);
+                                 LoraGatewayInit lora_gateway_init);
   ~DxSmartLr02LoraGateway() override;
 
   ActionPtr<LoraGatewayOperation> Start() override;
@@ -60,26 +60,26 @@ class DxSmartLr02LoraGateway final : public ILoraGateway Driver {
   ActionPtr<OpenNetworkOperation> OpenNetwork(Protocol protocol,
                                               std::string const& host,
                                               std::uint16_t port) override;
-  ActionPtr<LoraModuleOperation> CloseNetwork(
-      ConnectionLoraModuleIndex connect_index) override;
-  ActionPtr<WriteOperation> WritePacket(ConnectionLoraModuleIndex connect_index,
+  ActionPtr<LoraGatewayOperation> CloseNetwork(
+      ConnectionLoraGatewayIndex connect_index) override;
+  ActionPtr<WriteOperation> WritePacket(ConnectionLoraGatewayIndex connect_index,
                                         ae::DataBuffer const& data) override;
 
   DataEvent::Subscriber data_event() override;
 
   ActionPtr<LoraGatewayOperation> SetPowerSaveParam(
-      LoraModulePowerSaveParam const& psp) override;
+      LoraGatewayPowerSaveParam const& psp) override;
   ActionPtr<LoraGatewayOperation> PowerOff() override;
   ActionPtr<LoraGatewayOperation> SetLoraGatewayAddress(
-      std::uint16_t const& address);  // Module address
+      std::uint16_t const& address);  // Gateway address
   ActionPtr<LoraGatewayOperation> SetLoraGatewayChannel(
-      std::uint8_t const& channel);  // Module channel
+      std::uint8_t const& channel);  // Gateway channel
 
   ActionPtr<LoraGatewayOperation> SetLoraGatewayCRCCheck(
-      kLoraGatewayCRCCheck const& crc_check);  // Module crc check
+      kLoraGatewayCRCCheck const& crc_check);  // Gateway crc check
   ActionPtr<LoraGatewayOperation> SetLoraGatewayIQSignalInversion(
       kLoraGatewayIQSignalInversion const&
-          signal_inversion);  // Module signal inversion
+          signal_inversion);  // Gateway signal inversion
 
  private:
   void Init();
@@ -92,9 +92,9 @@ class DxSmartLr02LoraGateway final : public ILoraGateway Driver {
       ActionPtr<OpenNetworkOperation> open_network_operation,
       std::string const& host, std::uint16_t port);
 
-  ActionPtr<IPipeline> SendData(ConnectionLoraModuleIndex connection,
+  ActionPtr<IPipeline> SendData(ConnectionLoraGatewayIndex connection,
                                 DataBuffer const& data);
-  ActionPtr<IPipeline> ReadPacket(ConnectionLoraModuleIndex connection);
+  ActionPtr<IPipeline> ReadPacket(ConnectionLoraGatewayIndex connection);
 
   void SetupPoll();
   ActionPtr<IPipeline> Poll();

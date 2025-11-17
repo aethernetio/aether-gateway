@@ -16,10 +16,10 @@
 
 #include "gateway_server.h"
 
-#define CLOUD_TEST_LORA_MODULE 1
+#define CLOUD_TEST_LORA_GATEWAY 1
 
 // IWYU pragma: begin_keeps
-#include "aether_construct_lora_module.h"
+#include "aether_construct_lora_gateway.h"
 // IWYU pragma: end_keeps
 
 namespace ae::gateway_server {

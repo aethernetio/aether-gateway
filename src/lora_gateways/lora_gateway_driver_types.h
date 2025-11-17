@@ -161,14 +161,13 @@ struct LoraGatewayPowerSaveParam {
 };
 
 struct LoraGatewayInit {
-  AE_REFLECT_MEMBERS(serial_init, psp, lora_gateway_freq_range, lora_gateway_my_adress,
-                     lora_gateway_bs_adress, lora_gateway_channel,
+  AE_REFLECT_MEMBERS(serial_init, psp, lora_gateway_freq_range,
+                     lora_gateway_my_adress, lora_gateway_channel,
                      lora_gateway_crc_check, lora_gateway_signal_inversion)
   SerialInit serial_init;
   LoraGatewayPowerSaveParam psp;
   kLoraModuleFreqRange lora_gateway_freq_range{kLoraModuleFreqRange::kFREUndef};
   std::uint16_t lora_gateway_my_adress{0};
-  std::uint16_t lora_gateway_bs_adress{0};
   std::uint8_t lora_gateway_channel{0};
   kLoraGatewayCRCCheck lora_gateway_crc_check{kLoraGatewayCRCCheck::kCRCOff};
   kLoraGatewayIQSignalInversion lora_gateway_signal_inversion{kLoraGatewayIQSignalInversion::kIQoff};

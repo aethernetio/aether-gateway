@@ -42,12 +42,10 @@ class DxSmartLr02TcpOpenNetwork final
     : public Action<DxSmartLr02TcpOpenNetwork> {
  public:
   DxSmartLr02TcpOpenNetwork(ActionContext action_context,
-                            DxSmartLr02LoraGateway& lora_gw,
+                            DxSmartLr02LoraGateway& /* lora_gw */,
                             std::string host, std::uint16_t port)
       : Action{action_context},
         action_context_{action_context},
-        lora_module_{&lora_module},
-        at_comm_support_{&lora_module.at_comm_support_},
         host_{std::move(host)},
         port_{port} {
     AE_TELED_DEBUG("Open tcp connection for {}:{}", host_, port_);
@@ -72,8 +70,6 @@ class DxSmartLr02TcpOpenNetwork final
 
  private:
   ActionContext action_context_;
-  DxSmartLr02LoraGateway* lora_gateway_;
-  AtSupport* at_comm_support_;
   std::string host_;
   std::uint16_t port_;
   ActionPtr<IPipeline> operation_pipeline_;
@@ -90,12 +86,10 @@ class DxSmartLr02UdpOpenNetwork final
     : public Action<DxSmartLr02UdpOpenNetwork> {
  public:
   DxSmartLr02UdpOpenNetwork(ActionContext action_context,
-                            DxSmartLr02LoraGateway& lora_gateway,
+                            DxSmartLr02LoraGateway& /* lora_gw */,
                             std::string host, std::uint16_t port)
       : Action{action_context},
         action_context_{action_context},
-        lora_gateway_{&lora_gateway},
-        at_comm_support_{&lora_gateway.at_comm_support_},
         host_{std::move(host)},
         port_{port} {
     AE_TELED_DEBUG("Open UDP connection for {}:{}", host_, port_);
@@ -126,7 +120,7 @@ class DxSmartLr02UdpOpenNetwork final
   Subscription operation_sub_;
   std::int32_t handle_{-1};
   ConnectionLoraGatewayIndex connection_index_ =
-      kInvalidConnectionLoraModuleIndex;
+      kInvalidConnectionLoraGatewayIndex;
   bool success_{};
   bool error_{};
   bool stop_{};
@@ -151,7 +145,7 @@ DxSmartLr02LoraGateway::~DxSmartLr02LoraGateway() { Stop(); }
 ActionPtr<DxSmartLr02LoraGateway::LoraGatewayOperation>
 DxSmartLr02LoraGateway::Start() {
   auto lora_gateway_operation = ActionPtr<LoraGatewayOperation>{action_context_};
-  operation_queue_->Push(Stage([this, lora_module_operation]()
+  operation_queue_->Push(Stage([this, lora_gateway_operation]()
                                    -> ActionPtr<IPipeline> {
     // if already started, notify of success and return
     if (started_) {
@@ -179,8 +173,8 @@ DxSmartLr02LoraGateway::Start() {
     pipeline->StatusEvent().Subscribe(ActionHandler{
         OnResult{
             [lora_gateway_operation]() { lora_gateway_operation->Notify(); }},
-        OnError{[lora_module_operation]() { lora_gateway_operation->Failed(); }},
-        OnStop{[lora_module_operation]() { lora_gateway_operation->Stop(); }}});
+        OnError{[lora_gateway_operation]() { lora_gateway_operation->Failed(); }},
+        OnStop{[lora_gateway_operation]() { lora_gateway_operation->Stop(); }}});
 
     return pipeline;
   }));
@@ -205,7 +199,7 @@ DxSmartLr02LoraGateway::Stop() {
     pipeline->StatusEvent().Subscribe(ActionHandler{
         OnResult{
             [lora_gateway_operation]() { lora_gateway_operation->Notify(); }},
-        OnError{[lora_gatewaye_operation]() { lora_gateway_operation->Failed(); }},
+        OnError{[lora_gateway_operation]() { lora_gateway_operation->Failed(); }},
         OnStop{[lora_gateway_operation]() { lora_gateway_operation->Stop(); }}});
 
     return pipeline;
@@ -235,7 +229,7 @@ DxSmartLr02LoraGateway::OpenNetwork(ae::Protocol protocol,
   return open_network_operation;
 }
 
-ActionPtr<DxSmartLr02LoraModule::LoraGatewayOperation>
+ActionPtr<DxSmartLr02LoraGateway::LoraGatewayOperation>
 DxSmartLr02LoraGateway::CloseNetwork(
     ae::ConnectionLoraGatewayIndex /*connect_index*/) {
   return {};
@@ -316,26 +310,26 @@ DxSmartLr02LoraGateway::SetPowerSaveParam(LoraGatewayPowerSaveParam const& psp) 
         Stage([this]() { return EnterAtMode(); }),
         // Configure Lora Gateway Mode
         Stage(
-            [this, psp]() { return SetLoraGatewayMode(psp.lora_module_mode); }),
+            [this, psp]() { return SetLoraGatewayMode(psp.lora_gateway_mode); }),
         // Configure Lora Gateway Level
         Stage([this, psp]() {
-          return SetLoraGatewayLevel(psp.lora_module_level);
+          return SetLoraGatewayLevel(psp.lora_gateway_level);
         }),
         // Configure Lora Gateway Power
         Stage([this, psp]() {
-          return SetLoraGatewayPower(psp.lora_module_power);
+          return SetLoraGatewayPower(psp.lora_gateway_power);
         }),
         // Configure Lora Gateway BandWidth
         Stage([this, psp]() {
-          return SetLoraGatewayBandWidth(psp.lora_module_band_width);
+          return SetLoraGatewayBandWidth(psp.lora_gateway_band_width);
         }),
         // Configure Lora Gateway Coding Rate
         Stage([this, psp]() {
-          return SetLoraGatewayCodingRate(psp.lora_module_coding_rate);
+          return SetLoraGatewayCodingRate(psp.lora_gateway_coding_rate);
         }),
         // Configure Lora Gateway Spreading Factor
         Stage([this, psp]() {
-          return SetLoraGatewaySpreadingFactor(psp.lora_module_spreading_factor);
+          return SetLoraGatewaySpreadingFactor(psp.lora_gateway_spreading_factor);
         }),
         // Exit AT command mode
         Stage([this]() { return ExitAtMode(); }));
@@ -382,7 +376,7 @@ DxSmartLr02LoraGateway::SetLoraGatewayAddress(std::uint16_t const& address) {
 
   return lora_gateway_operation;
 }
-
+    
 ActionPtr<DxSmartLr02LoraGateway::LoraGatewayOperation>
 DxSmartLr02LoraGateway::SetLoraGatewayChannel(std::uint8_t const& channel) {
   if (channel > 0x1E) {
@@ -415,8 +409,8 @@ DxSmartLr02LoraGateway::SetLoraGatewayChannel(std::uint8_t const& channel) {
 }
 
 ActionPtr<DxSmartLr02LoraGateway::LoraGatewayOperation>
-DxSmartLr02LoraGateway::SetLoraModuleCRCCheck(
-    kLoraModuleCRCCheck const& crc_check) {
+DxSmartLr02LoraGateway::SetLoraGatewayCRCCheck(
+    kLoraGatewayCRCCheck const& crc_check) {
   auto lora_gateway_operation = ActionPtr<LoraGatewayOperation>{action_context_};
 
   operation_queue_->Push(Stage([this, lora_gateway_operation, crc_check]() {
@@ -627,8 +621,8 @@ ActionPtr<IPipeline> DxSmartLr02LoraGateway::ExitAtMode() {
   return {};
 }
 
-ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModuleMode(
-    kLoraModuleMode const& mode) {
+ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraGatewayMode(
+    kLoraGatewayMode const& mode) {
   return MakeActionPtr<Pipeline>(
       action_context_, Stage([this, mode]() {
         return at_comm_support_.MakeRequest(
@@ -636,8 +630,8 @@ ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModuleMode(
       }));
 }
 
-ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModuleLevel(
-    kLoraModuleLevel const& level) {
+ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraGatewayLevel(
+    kLoraGatewayLevel const& level) {
   return MakeActionPtr<Pipeline>(
       action_context_, Stage([this, level]() {
         return at_comm_support_.MakeRequest(
@@ -645,8 +639,8 @@ ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModuleLevel(
       }));
 }
 
-ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModulePower(
-    kLoraModulePower const& power) {
+ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraGatewayPower(
+    kLoraGatewayPower const& power) {
   return MakeActionPtr<Pipeline>(
       action_context_, Stage([this, power]() {
         return at_comm_support_.MakeRequest(
@@ -654,10 +648,10 @@ ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModulePower(
       }));
 }
 
-ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModuleBandWidth(
-    kLoraModuleBandWidth const& band_width) {
+ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraGatewayBandWidth(
+    kLoraGatewayBandWidth const& band_width) {
   int bw{0};
-  if (band_width != kLoraModuleBandWidth::kBandWidth125K) {
+  if (band_width != kLoraGatewayBandWidth::kBandWidth125K) {
     return {};
   }
 
@@ -668,8 +662,8 @@ ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModuleBandWidth(
       }));
 }
 
-ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModuleCodingRate(
-    kLoraModuleCodingRate const& coding_rate) {
+ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraGatewayCodingRate(
+    kLoraGatewayCodingRate const& coding_rate) {
   return MakeActionPtr<Pipeline>(
       action_context_, Stage([this, coding_rate]() {
         return at_comm_support_.MakeRequest(
@@ -677,8 +671,8 @@ ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModuleCodingRate(
       }));
 }
 
-ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraModuleSpreadingFactor(
-    kLoraModuleSpreadingFactor const& spreading_factor) {
+ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetLoraGatewaySpreadingFactor(
+    kLoraGatewaySpreadingFactor const& spreading_factor) {
   return MakeActionPtr<Pipeline>(
       action_context_, Stage([this, spreading_factor]() {
         return at_comm_support_.MakeRequest(
@@ -759,19 +753,19 @@ ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetStopBits(kStopBits stop_bits) {
 }
 
 ActionPtr<IPipeline> DxSmartLr02LoraGateway::SetupLoraNet(
-    LoraModuleInit& lora_module_init) {
+    LoraGatewayInit& lora_gateway_init) {
   return MakeActionPtr<Pipeline>(
       action_context_, Stage([this, lora_gateway_init]() {
-        return SetLoraModuleAddress(lora_gateway_init.lora_module_my_adress);
+        return SetLoraGatewayAddress(lora_gateway_init.lora_gateway_my_adress);
       }),
       Stage([this, lora_gateway_init]() {
-        return SetLoraModuleChannel(lora_gateway_init.lora_module_channel);
+        return SetLoraGatewayChannel(lora_gateway_init.lora_gateway_channel);
       }),
       Stage([this, lora_gateway_init]() {
-        return SetLoraModuleCRCCheck(lora_gateway_init.lora_module_crc_check);
+        return SetLoraGatewayCRCCheck(lora_gateway_init.lora_gateway_crc_check);
       }),
       Stage([this, lora_gateway_init]() {
-        return SetLoraModuleIQSignalInversion(
+        return SetLoraGatewayIQSignalInversion(
             lora_gateway_init.lora_gateway_signal_inversion);
       }));
 }
