@@ -60,3 +60,4 @@ projects/intel_x86/linux/gcc/aether-client-cpp
 *.vs
 
 .updated
+CppProperties.json

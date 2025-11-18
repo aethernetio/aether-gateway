@@ -14,11 +14,15 @@
 
 cmake_minimum_required(VERSION 3.16.0)
 
-list( APPEND src_list
-  main.cpp
-  gateway_server.cpp
+list(APPEND gateway_srcs
+            "main.cpp"
+            "gateway_server.cpp"
 )
 
+list(APPEND lora_gateways_srcs
+            "lora_gateways/dx_smart_lr02_gw.cpp"
+            "lora_gateways/lora_gateway_factory.cpp")
+            
 project("aether-gateway-app" VERSION "1.0.0" LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -26,7 +30,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory("../libs/aether/aether" "aether")
 
-add_executable(${PROJECT_NAME} ${src_list})
+add_executable(${PROJECT_NAME} ${gateway_srcs}
+                               ${lora_gateways_srcs})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE aether)
 
