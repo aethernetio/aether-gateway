@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef SRC_GATEWAY_SERVER_H_
-#define SRC_GATEWAY_SERVER_H_
+#ifndef GATEWAY_SERVER_H_
+#define GATEWAY_SERVER_H_
 
 #include <chrono>
 #include <cstdint>
 
 #include "aether/all.h"
 
-#endif  // SRC_GATEWAY_SERVER_H_
+#endif  // GATEWAY_SERVER_H_

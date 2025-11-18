@@ -25,7 +25,7 @@ std::unique_ptr<ILoraGatewayDriver> LoraGatewayDriverFactory::CreateLoraGateway(
     LoraGatewayInit lora_gateway_init) {
 #if AE_LORA_GATEWAY_DXSMART_LR02_ENABLED == 1
   return std::make_unique<DxSmartLr02LoraGateway>(action_context, poller,
-                                                 std::move(lora_gateway_init));
+                                                  std::move(lora_gateway_init));
 #endif
 }
 

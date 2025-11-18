@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef AETHER_LORA_GATEWAYS_DX_SMART_LR02_GW_H_
-#define AETHER_LORA_GATEWAYS_DX_SMART_LR02_GW_H_
+#ifndef LORA_GATEWAYS_DX_SMART_LR02_GW_H_
+#define LORA_GATEWAYS_DX_SMART_LR02_GW_H_
 
 #include <set>
 #include <memory>
@@ -51,8 +51,8 @@ class DxSmartLr02LoraGateway final : public ILoraGatewayDriver {
 
  public:
   explicit DxSmartLr02LoraGateway(ActionContext action_context,
-                                 IPoller::ptr const& poller,
-                                 LoraGatewayInit lora_gateway_init);
+                                  IPoller::ptr const& poller,
+                                  LoraGatewayInit lora_gateway_init);
   ~DxSmartLr02LoraGateway() override;
 
   ActionPtr<LoraGatewayOperation> Start() override;
@@ -62,8 +62,9 @@ class DxSmartLr02LoraGateway final : public ILoraGatewayDriver {
                                               std::uint16_t port) override;
   ActionPtr<LoraGatewayOperation> CloseNetwork(
       ConnectionLoraGatewayIndex connect_index) override;
-  ActionPtr<WriteOperation> WritePacket(ConnectionLoraGatewayIndex connect_index,
-                                        ae::DataBuffer const& data) override;
+  ActionPtr<WriteOperation> WritePacket(
+      ConnectionLoraGatewayIndex connect_index,
+      ae::DataBuffer const& data) override;
 
   DataEvent::Subscriber data_event() override;
 
@@ -142,4 +143,4 @@ class DxSmartLr02LoraGateway final : public ILoraGatewayDriver {
 
 } /* namespace ae */
 
-#endif  // AETHER_LORA_GATEWAYS_DX_SMART_LR02_GW_H_
+#endif  // LORA_GATEWAYS_DX_SMART_LR02_GW_H_

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CLOUD_AETHER_CONSTRUCT_H_
-#define CLOUD_AETHER_CONSTRUCT_H_
+#ifndef AETHER_CONSTRUCT_H_
+#define AETHER_CONSTRUCT_H_
 
 #include "aether/all.h"
 
@@ -23,4 +23,4 @@ namespace ae::gateway_server {
 static RcPtr<AetherApp> construct_aether_app();
 }
 
-#endif  // CLOUD_AETHER_CONSTRUCT_H_
+#endif  // AETHER_CONSTRUCT_H_

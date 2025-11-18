@@ -44,7 +44,7 @@ int AetherGatewayServer() {
    * To configure its creation \see AetherAppContext.
    */
   auto aether_app = ae::gateway_server::construct_aether_app();
-  
+
   /**
    * Application loop.
    * All the asynchronous actions are updated on this loop.
