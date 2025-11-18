@@ -47,20 +47,19 @@ ae::LoraGatewayInit const lora_gateway_init{
     {kLoraGatewayIQSignalInversion::kIQoff}};  // Signal inversion
 
 static RcPtr<AetherApp> construct_aether_app() {
-  return AetherApp::Construct(
-      AetherAppContext{}
+    return AetherApp::Construct(
+        AetherAppContext{}
 #  if defined AE_DISTILLATION
-          .AdaptersFactory([](AetherAppContext const& context) {
-            auto adapter_registry =
-                context.domain().CreateObj<AdapterRegistry>();
-            adapter_registry->Add(
-                context.domain().CreateObj<ae::LoraGatewayAdapter>(
-                    ae::GlobalId::kLoraGatewayAdapter, context.aether(),
-                    context.poller(), lora_gateway_init));
-            return adapter_registry;
-          })
+        .AdaptersFactory([](AetherAppContext const& context) {
+        auto adapter_registry =
+            context.domain().CreateObj<AdapterRegistry>();
+        adapter_registry->Add(context.domain().CreateObj<EthernetAdapter>(
+            GlobalId::kEthernetAdapter, context.aether(), context.poller(),
+            context.dns_resolver()));
+        return adapter_registry;
+    })
 #  endif
-  );
+    );
 }
 }  // namespace ae::gateway_server
 
