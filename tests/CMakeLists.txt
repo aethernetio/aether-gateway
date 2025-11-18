@@ -14,27 +14,17 @@
 
 cmake_minimum_required( VERSION 3.16 )
 
+# for unit tests
+enable_testing()
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/run)
 set(ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
+# enable doubles in unity tests
+add_compile_definitions("UNITY_INCLUDE_DOUBLE")
 
 #dependancies
 if (NOT TARGET aether)
   add_subdirectory("${ROOT_DIR}/libs/aether/aether" "aether")
-endif()
-if (NOT TARGET bcrypt)
-  add_subdirectory("${ROOT_DIR}/libs/aether/third_party/libbcrypt" "libbcrypt")
-endif()
-if (NOT TARGET hydrogen)
-  add_subdirectory("${ROOT_DIR}/libs/aether/third_party/libhydrogen" "libhydrogen")
-endif()
-if (NOT TARGET sodium)
-  add_subdirectory("${ROOT_DIR}/libs/aether/third_party/libsodium" "libsodium")
-endif()
-if (NOT TARGET unity)
-  add_subdirectory("${ROOT_DIR}/libs/aether/third_party/Unity" "libUnity")
-endif()
-if (NOT TARGET gcem)
-  add_subdirectory("${ROOT_DIR}/libs/aether/third_party/gcem" "gcem")
 endif()
 
 #tests
