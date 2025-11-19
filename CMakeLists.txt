@@ -1,4 +1,4 @@
-# Copyright 2024 Aethernet Inc.
+# Copyright 2025 Aethernet Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,30 +12,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# The following lines of boilerplate have to be in your project's CMakeLists
-# in this exact order for cmake to work correctly
+cmake_minimum_required(VERSION 3.16.0)
 
-cmake_minimum_required(VERSION 3.16)
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
+endif()
 
-project(Aether LANGUAGES C CXX)
+if (ESP_PLATFORM)
+  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+  set(CM_PLATFORM "ESP32")
+endif()
+
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(AE_ADDRESS_SANITIZE Off "Enable address sanitizer")
 
-# enable doubles in unity tests
-add_compile_definitions("UNITY_INCLUDE_DOUBLE")
+if (CM_PLATFORM STREQUAL "ESP32")
+  # ESP IDF project
+  idf_build_set_property(CM_PLATFORM "${CM_PLATFORM}")
+  add_compile_definitions(CM_ESP32)
+  get_filename_component(configName "${CMAKE_BINARY_DIR}" NAME)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  list(APPEND EXTRA_COMPONENT_DIRS
+    "./libs/aether/aether"
+    "./src")
+  project(aether-gateway LANGUAGES CXX C ASM)
+else()
+  # regular cmake project
+  project(aether-gateway LANGUAGES CXX C ASM)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-if (AE_ADDRESS_SANITIZE)
-  add_compile_options(-fsanitize=address)
-  add_link_options(-fsanitize=address)
+  if (AE_ADDRESS_SANITIZE)
+    add_compile_options(-fsanitize=address)
+    add_link_options(-fsanitize=address)
+  endif()
+
+  add_subdirectory("src" "aether-gateway")
+  # add_subdirectory("tests" "tests")
 endif()
-
-# for unit tests
-enable_testing()
-
-add_subdirectory("src" "aether-gateway")
-add_subdirectory("tests" "tests")

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef AETHER_LORA_MODULES_LORA_GATEWAY_FACTORY_H_
-#define AETHER_LORA_MODULES_LORA_GATEWAY_FACTORY_H_
+#ifndef LORA_GATEWAYS_LORA_GATEWAY_FACTORY_H_
+#define LORA_GATEWAYS_LORA_GATEWAY_FACTORY_H_
 
 #include <memory>
 
@@ -40,4 +40,4 @@ class LoraGatewayDriverFactory {
 
 #endif
 
-#endif  // AETHER_LORA_MODULES_LORA_GATEWAY_FACTORY_H_
+#endif  //  LORA_GATEWAYS_LORA_GATEWAY_FACTORY_H_

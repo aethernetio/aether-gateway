@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef AETHER_LORA_MODULES_ILORA_MODULE_DRIVER_H_
-#define AETHER_LORA_MODULES_ILORA_MODULE_DRIVER_H_
+#ifndef LORA_GATEWAYS_ILORA_GATEWAY_DRIVER_H_
+#define LORA_GATEWAYS_ILORA_GATEWAY_DRIVER_H_
 
 #include <string>
 #include <cstdint>
@@ -35,7 +35,8 @@ class ILoraGatewayDriver {
   using LoraGatewayOperation = NotifyAction;
   using WriteOperation = NotifyAction;
   using OpenNetworkOperation = PromiseAction<ConnectionLoraGatewayIndex>;
-  using DataEvent = Event<void(ConnectionLoraGatewayIndex, DataBuffer const& data)>;
+  using DataEvent =
+      Event<void(ConnectionLoraGatewayIndex, DataBuffer const& data)>;
 
   virtual ~ILoraGatewayDriver() = default;
 
@@ -57,4 +58,4 @@ class ILoraGatewayDriver {
 
 } /* namespace ae */
 
-#endif  // AETHER_LORA_MODULES_ILORA_MODULE_DRIVER_H_
+#endif  //  LORA_GATEWAYS_ILORA_GATEWAY_DRIVER_H_

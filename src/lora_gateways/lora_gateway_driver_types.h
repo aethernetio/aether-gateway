@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef AETHER_LORA_GATEWAYS_LORA_GATEWAY_DRIVER_TYPES_H_
-#define AETHER_LORA_GATEWAYS_LORA_GATEWAY_DRIVER_TYPES_H_
+#ifndef LORA_GATEWAYS_LORA_GATEWAY_DRIVER_TYPES_H_
+#define LORA_GATEWAYS_LORA_GATEWAY_DRIVER_TYPES_H_
 
 #include <string>
 #include <vector>
@@ -89,13 +89,13 @@ enum class kLoraGatewayPower : std::int8_t {
 // Signal Bandwidth 7.81 10.42 15.63 20.83 31.25 41.67 62.5 125 250 500
 
 enum class kLoraGatewayBandWidth : std::int8_t {
-  kBandWidth7K81  = 0,
+  kBandWidth7K81 = 0,
   kBandWidth10K42 = 1,
   kBandWidth15K63 = 2,
   kBandWidth20K83 = 3,
   kBandWidth31K25 = 4,
   kBandWidth41K67 = 5,
-  kBandWidth62K5  = 6,
+  kBandWidth62K5 = 6,
   kBandWidth125K = 7,
   kBandWidth250K = 8,
   kBandWidth500K = 9
@@ -126,18 +126,18 @@ enum class kLoraGatewayIQSignalInversion : std::int8_t {
   kIQon = 1,
 };
 
-// LoRa uses license-free sub-gigahertz radio frequency bands 
+// LoRa uses license-free sub-gigahertz radio frequency bands
 // EU433 (LPD433) or
-// CH470 (470-510) in China; 
-// EU868 (863–870/873 MHz) in Europe; 
+// CH470 (470-510) in China;
+// EU868 (863–870/873 MHz) in Europe;
 // AU915 (915–928 MHz) in America;
 // SA923 (923–928 MHz) in South America;
-// US915 (902–928 MHz) in North America; 
-// IN865 (865–867 MHz) in India; and 
+// US915 (902–928 MHz) in North America;
+// IN865 (865–867 MHz) in India; and
 // AS923 (915–928 MHz) in Asia
 enum class kLoraModuleFreqRange : std::int8_t {
   kFREUndef = -1,
-  kFREU433 = 0, 
+  kFREU433 = 0,
   kFRCH470 = 1,
   kFREU868 = 2,
   kFRAU915 = 3,
@@ -152,12 +152,16 @@ struct LoraGatewayPowerSaveParam {
   AE_REFLECT_MEMBERS(lora_gateway_mode, lora_gateway_level, lora_gateway_power,
                      lora_gateway_band_width, lora_gateway_coding_rate,
                      lora_gateway_spreading_factor)
-  kLoraGatewayMode lora_gateway_mode{kLoraGatewayMode::kTransparentTransmission};
+  kLoraGatewayMode lora_gateway_mode{
+      kLoraGatewayMode::kTransparentTransmission};
   kLoraGatewayLevel lora_gateway_level{kLoraGatewayLevel::kLevel0};
   kLoraGatewayPower lora_gateway_power{kLoraGatewayPower::kPower22};
-  kLoraGatewayBandWidth lora_gateway_band_width{kLoraGatewayBandWidth::kBandWidth125K};
-  kLoraGatewayCodingRate lora_gateway_coding_rate{kLoraGatewayCodingRate::kCR4_6};
-  kLoraGatewaySpreadingFactor lora_gateway_spreading_factor{kLoraGatewaySpreadingFactor::kSF12};
+  kLoraGatewayBandWidth lora_gateway_band_width{
+      kLoraGatewayBandWidth::kBandWidth125K};
+  kLoraGatewayCodingRate lora_gateway_coding_rate{
+      kLoraGatewayCodingRate::kCR4_6};
+  kLoraGatewaySpreadingFactor lora_gateway_spreading_factor{
+      kLoraGatewaySpreadingFactor::kSF12};
 };
 
 struct LoraGatewayInit {
@@ -170,11 +174,13 @@ struct LoraGatewayInit {
   std::uint16_t lora_gateway_my_adress{0};
   std::uint8_t lora_gateway_channel{0};
   kLoraGatewayCRCCheck lora_gateway_crc_check{kLoraGatewayCRCCheck::kCRCOff};
-  kLoraGatewayIQSignalInversion lora_gateway_signal_inversion{kLoraGatewayIQSignalInversion::kIQoff};
+  kLoraGatewayIQSignalInversion lora_gateway_signal_inversion{
+      kLoraGatewayIQSignalInversion::kIQoff};
 };
 
 using ConnectionLoraGatewayIndex = std::int8_t;
-static constexpr ConnectionLoraGatewayIndex kInvalidConnectionLoraGatewayIndex = -1;
+static constexpr ConnectionLoraGatewayIndex kInvalidConnectionLoraGatewayIndex =
+    -1;
 
 struct LoraGatewayConnection {
   AE_REFLECT_MEMBERS(connect_index, protocol, host, port)
@@ -193,4 +199,4 @@ struct LoraGatewayPacket {
 };
 }  // namespace ae
 
-#endif  // AETHER_LORA_GATEWAYS_LORA_GATEWAY_DRIVER_TYPES_H_
+#endif  // LORA_GATEWAYS_LORA_GATEWAY_DRIVER_TYPES_H_

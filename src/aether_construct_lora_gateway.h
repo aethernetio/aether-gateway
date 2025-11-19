@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CLOUD_AETHER_CONSTRUCT_LORA_GATEWAY_H_
-#define CLOUD_AETHER_CONSTRUCT_LORA_GATEWAY_H_
+#ifndef AETHER_CONSTRUCT_LORA_GATEWAY_H_
+#define AETHER_CONSTRUCT_LORA_GATEWAY_H_
 
 #include "aether_construct.h"
 #include "lora_gateways/lora_gateway_driver_types.h"
@@ -26,7 +26,7 @@ namespace ae::gateway_server {
 static constexpr std::string_view kSerialPortLoraGateway =
     "COM1";  // Lora gateway serial port
 SerialInit serial_init_lora_gateway = {std::string(kSerialPortLoraGateway),
-                                      kBaudRate::kBaudRate9600};
+                                       kBaudRate::kBaudRate9600};
 
 ae::LoraGatewayPowerSaveParam psp{
     {kLoraGatewayMode::kTransparentTransmission},  // kLoraGatewayMode
@@ -34,7 +34,7 @@ ae::LoraGatewayPowerSaveParam psp{
     {kLoraGatewayPower::kPower22},                 // kLoraGatewayPower
     {kLoraGatewayBandWidth::kBandWidth125K},       // kLoraGatewayBandWidth
     {kLoraGatewayCodingRate::kCR4_6},              // kLoraGatewayCodingRate
-    {kLoraGatewaySpreadingFactor::kSF12}           // kLoraGatewaySpreadingFactor
+    {kLoraGatewaySpreadingFactor::kSF12}  // kLoraGatewaySpreadingFactor
 };
 
 ae::LoraGatewayInit const lora_gateway_init{
@@ -47,21 +47,21 @@ ae::LoraGatewayInit const lora_gateway_init{
     {kLoraGatewayIQSignalInversion::kIQoff}};  // Signal inversion
 
 static RcPtr<AetherApp> construct_aether_app() {
-    return AetherApp::Construct(
-        AetherAppContext{}
+  return AetherApp::Construct(
+      AetherAppContext()
 #  if defined AE_DISTILLATION
-        .AdaptersFactory([](AetherAppContext const& context) {
-        auto adapter_registry =
-            context.domain().CreateObj<AdapterRegistry>();
-        adapter_registry->Add(context.domain().CreateObj<EthernetAdapter>(
-            GlobalId::kEthernetAdapter, context.aether(), context.poller(),
-            context.dns_resolver()));
-        return adapter_registry;
-    })
+          .AdaptersFactory([](AetherAppContext const& context) {
+            auto adapter_registry =
+                context.domain().CreateObj<AdapterRegistry>();
+            adapter_registry->Add(context.domain().CreateObj<EthernetAdapter>(
+                GlobalId::kEthernetAdapter, context.aether(), context.poller(),
+                context.dns_resolver()));
+            return adapter_registry;
+          })
 #  endif
-    );
+  );
 }
 }  // namespace ae::gateway_server
 
 #endif
-#endif  // CLOUD_AETHER_CONSTRUCT_LORA_GATEWAY_H_
+#endif  // AETHER_CONSTRUCT_LORA_GATEWAY_H_
