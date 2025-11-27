@@ -17,6 +17,12 @@ cmake_minimum_required(VERSION 3.16.0)
 list(APPEND gateway_srcs
             "main.cpp"
             "gateway_server.cpp"
+            "gateway/server_stream.cpp"
+            "gateway/server_stream_manager.cpp"
+            "gateway/gw_stream.cpp"
+            "gateway/gateway.cpp"
+            "gateway/local_port.cpp"
+            "gateway/api/client_api.cpp"
 )
 
 list(APPEND lora_gateways_srcs
