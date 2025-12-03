@@ -28,7 +28,7 @@ class ClientApi : public ApiClass {
 
   Method<3, void(ClientId client_id, ServerId server_id, DataBuffer data)>
       from_server_id;
-  Method<4, void(ClientId client_id, std::uint64_t descriptor_hash,
+  Method<4, void(ClientId client_id, std::uint32_t endpoints_hash,
                  DataBuffer data)>
       from_server;
 };

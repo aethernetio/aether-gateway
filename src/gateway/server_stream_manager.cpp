@@ -108,7 +108,18 @@ class RequestServerStreamGetAction : public StreamGetAction {
         OnResult{[this](auto const& action) {
           auto const& servers = action.servers();
           assert(!servers.empty() && "Servers should not be empty on result");
-          auto server = server_stream_manager_->BuildServer(servers.front());
+
+          auto const& sd = servers.front();
+          std::vector<UnifiedAddress> endpoints;
+          for (auto const& ipp : sd.ips) {
+            for (auto const& proto_port : ipp.protocol_and_ports) {
+              endpoints.emplace_back(IpAddressPortProtocol{
+                  {ipp.ip, proto_port.port}, proto_port.protocol});
+            }
+          }
+
+          auto server = server_stream_manager_->BuildServer(
+              sd.server_id, {std::move(endpoints)});
           stream_ = server_stream_manager_->MakeStream(std::move(server));
           server_stream_manager_->CacheStream(server_id_, stream_);
           state_ = State::kResult;
@@ -146,43 +157,27 @@ ActionPtr<StreamGetAction> ServerStreamManager::GetStream(ServerId server_id,
 }
 
 ActionPtr<StreamGetAction> ServerStreamManager::GetStream(
-    ServerDescriptor const& server_descriptor, bool cache) {
-  if (cache) {
-    auto& stream_cache = OpenCache();
-    auto it = stream_cache.find(server_descriptor.server_id);
-    if (it != std::end(stream_cache)) {
-      return ActionPtr<server_stream_manager_internal::ExistingStreamGetAction>{
-          *gateway_, it->second.lock()};
-    }
-  }
-
-  auto server = BuildServer(server_descriptor);
+    ServerEndpoints const& endpoints) {
+  auto server = BuildServer(0, endpoints);
   auto stream = MakeStream(std::move(server));
-  CacheStream(server_descriptor.server_id, stream);
 
   return ActionPtr<server_stream_manager_internal::ExistingStreamGetAction>{
       *gateway_, std::move(stream)};
 }
 
-Server::ptr ServerStreamManager::BuildServer(
-    ServerDescriptor const& descriptor) {
+Server::ptr ServerStreamManager::BuildServer(ServerId server_id,
+                                             ServerEndpoints const& endpoints) {
   auto const& aether = gateway_->aether;
 
-  auto cached = aether->GetServer(descriptor.server_id);
-  if (cached) {
-    return cached;
-  }
-
-  std::vector<UnifiedAddress> endpoints;
-  for (auto const& ipp : descriptor.ips) {
-    for (auto const& proto_port : ipp.protocol_and_ports) {
-      endpoints.emplace_back(IpAddressPortProtocol{{ipp.ip, proto_port.port},
-                                                   proto_port.protocol});
+  if (server_id != 0) {
+    auto cached = aether->GetServer(server_id);
+    if (cached) {
+      return cached;
     }
   }
 
-  auto server = aether->domain_->CreateObj<Server>(descriptor.server_id,
-                                                   std::move(endpoints));
+  auto server =
+      aether->domain_->CreateObj<Server>(server_id, endpoints.endpoints);
   server->Register(aether->adapter_registry);
   aether->AddServer(server);
   return server;

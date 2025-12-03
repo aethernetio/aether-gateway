@@ -28,7 +28,7 @@ class GatewayApi : public ApiClassImpl<GatewayApi> {
   virtual void ToServerId(ClientId client_id, ServerId server_id,
                           DataBuffer data) = 0;
 
-  virtual void ToServer(ClientId client_id, ServerDescriptor server_descriptor,
+  virtual void ToServer(ClientId client_id, ServerEndpoints endpoints,
                         DataBuffer data) = 0;
 
   AE_METHODS(RegMethod<3, &GatewayApi::ToServerId>,

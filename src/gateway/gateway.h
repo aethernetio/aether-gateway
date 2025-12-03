@@ -19,6 +19,7 @@
 
 #include "aether/all.h"
 
+#include "gateway/local_port.h"
 #include "gateway/server_stream_manager.h"
 
 namespace ae {
@@ -35,12 +36,14 @@ class Gateway : public Obj {
   operator ActionContext() const { return ActionContext{*aether}; }
 
   ServerStreamManager& server_stream_manager();
+  LocalPort& local_port();
 
   Aether::ptr aether;
   Client::ptr gateway_client;
 
  private:
   std::unique_ptr<ServerStreamManager> server_stream_manager_;
+  std::unique_ptr<LocalPort> local_port_;
 };
 }  // namespace ae
 

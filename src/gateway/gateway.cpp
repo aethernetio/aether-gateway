@@ -28,4 +28,12 @@ ServerStreamManager& Gateway::server_stream_manager() {
   }
   return *server_stream_manager_;
 }
+
+LocalPort& Gateway::local_port() {
+  if (!local_port_) {
+    local_port_ = std::make_unique<LocalPort>(*this);
+  }
+  return *local_port_;
+}
+
 }  // namespace ae

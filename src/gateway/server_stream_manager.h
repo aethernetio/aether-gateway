@@ -56,15 +56,14 @@ class ServerStreamManager {
   /**
    * \brief Get stream based on existing or newly created server by its
    * descriptor.
-   * \param server_descriptor Server id.
+   * \param server_endpoints List of server endpoints.
    * \param cache Whether to use cache.
    * \return ActionPtr<StreamGetAction> Stream get action.
    */
-  ActionPtr<StreamGetAction> GetStream(
-      ServerDescriptor const& server_descriptor, bool cache = true);
+  ActionPtr<StreamGetAction> GetStream(ServerEndpoints const& server_endpoints);
 
  private:
-  Server::ptr BuildServer(ServerDescriptor const& descriptor);
+  Server::ptr BuildServer(ServerId server_id, ServerEndpoints const& endpoints);
   std::shared_ptr<ByteIStream> MakeStream(Server::ptr server);
   void CacheStream(ServerId server_id,
                    std::shared_ptr<ByteIStream> const& stream);

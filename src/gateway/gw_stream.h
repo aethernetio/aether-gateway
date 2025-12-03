@@ -28,7 +28,7 @@ class GwStream : public ByteIStream {
   // Make GwStream but it's required to resolve the server
   GwStream(Gateway& gateway, ServerId server_id);
   // Make GwStream with server descriptor provided
-  GwStream(Gateway& gateway, ServerDescriptor const& descriptor);
+  GwStream(Gateway& gateway, ServerEndpoints const& endpoints);
 
   ActionPtr<StreamWriteAction> Write(DataBuffer&& data) override;
   StreamUpdateEvent::Subscriber stream_update_event() override;
