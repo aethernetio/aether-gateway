@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#ifndef SIM_ALICE_BOB_USER_CONFIG_H
-#define SIM_ALICE_BOB_USER_CONFIG_H
+#ifndef USER_CONFIG_H_
+#define USER_CONFIG_H_
 
 #include "sim-gateway/sim-gateway-config.h"
 
-#endif  // SIM_ALICE_BOB_USER_CONFIG_H
+#endif  // USER_CONFIG_H_
