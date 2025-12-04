@@ -20,6 +20,7 @@ list(APPEND gateway_srcs
             "gw_stream.cpp"
             "gateway.cpp"
             "local_port.cpp"
+            "gateway_cloud.cpp"
             "api/client_api.cpp"
 )
 

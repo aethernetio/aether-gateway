@@ -20,7 +20,8 @@ namespace ae::gw {
 Gateway::Gateway(Aether::ptr aether, Client::ptr client, Domain* domain)
     : Obj{domain},
       aether{std::move(aether)},
-      gateway_client{std::move(client)} {}
+      gateway_client{std::move(client)},
+      gateway_cloud_{domain->CreateObj<GatewayCloud>()} {}
 
 ServerStreamManager& Gateway::server_stream_manager() {
   if (!server_stream_manager_) {
@@ -35,5 +36,7 @@ LocalPort& Gateway::local_port() {
   }
   return *local_port_;
 }
+
+GatewayCloud& Gateway::gateway_cloud() { return *gateway_cloud_; }
 
 }  // namespace ae::gw

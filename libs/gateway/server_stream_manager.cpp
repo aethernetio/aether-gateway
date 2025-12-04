@@ -179,6 +179,10 @@ Server::ptr ServerStreamManager::BuildServer(ServerId server_id,
   auto server =
       aether->domain_->CreateObj<Server>(server_id, endpoints.endpoints);
   server->Register(aether->adapter_registry);
+
+  // save server to gateway cloud
+  gateway_->gateway_cloud().AddServer(server);
+
   if (server_id != 0) {
     aether->AddServer(server);
   }

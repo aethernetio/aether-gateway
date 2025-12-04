@@ -120,6 +120,7 @@ void LocalPort::OutData(Key const& key, DataBuffer const& data) {
                  static_cast<int>(key.device_id), key.client_id, data);
   auto it = stream_store_.find(key);
   if (it == std::end(stream_store_)) {
+    AE_TELED_ERROR("Unable to find stream for answear");
     return;
   }
   // update the used time

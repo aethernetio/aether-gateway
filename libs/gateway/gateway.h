@@ -20,6 +20,7 @@
 #include "aether/all.h"
 
 #include "gateway/local_port.h"
+#include "gateway/gateway_cloud.h"
 #include "gateway/server_stream_manager.h"
 
 namespace ae::gw {
@@ -30,18 +31,20 @@ class Gateway : public Obj {
  public:
   Gateway(Aether::ptr aether, Client::ptr client, Domain* domain);
 
-  AE_OBJECT_REFLECT(AE_MMBRS(aether, gateway_client))
+  AE_OBJECT_REFLECT(AE_MMBRS(aether, gateway_client, gateway_cloud_))
 
   // Implement action context protocol
   operator ActionContext() const { return ActionContext{*aether}; }
 
   ServerStreamManager& server_stream_manager();
   LocalPort& local_port();
+  GatewayCloud& gateway_cloud();
 
   Aether::ptr aether;
   Client::ptr gateway_client;
 
  private:
+  GatewayCloud::ptr gateway_cloud_;
   std::unique_ptr<ServerStreamManager> server_stream_manager_;
   std::unique_ptr<LocalPort> local_port_;
 };
