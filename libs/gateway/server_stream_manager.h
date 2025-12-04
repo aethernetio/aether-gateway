@@ -22,7 +22,7 @@
 
 #include "aether/all.h"
 
-namespace ae {
+namespace ae::gw {
 class Gateway;
 
 namespace server_stream_manager_internal {
@@ -73,6 +73,6 @@ class ServerStreamManager {
   Gateway* gateway_;
   std::map<ServerId, std::weak_ptr<ByteIStream>> stream_cache_;
 };
-}  // namespace ae
+}  // namespace ae::gw
 
 #endif  // GATEWAY_SERVER_STREAM_MANAGER_H_

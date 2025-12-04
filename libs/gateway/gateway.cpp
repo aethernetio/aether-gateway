@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-#ifndef GATEWAY_API_CLIENT_API_H_
-#define GATEWAY_API_CLIENT_API_H_
+#include "gateway/gateway.h"
 
-#include <cstdint>
+namespace ae::gw {
+Gateway::Gateway(Aether::ptr aether, Client::ptr client, Domain* domain)
+    : Obj{domain},
+      aether{std::move(aether)},
+      gateway_client{std::move(client)} {}
 
-#include "aether/all.h"
+ServerStreamManager& Gateway::server_stream_manager() {
+  if (!server_stream_manager_) {
+    server_stream_manager_ = std::make_unique<ServerStreamManager>(*this);
+  }
+  return *server_stream_manager_;
+}
 
-namespace ae {
-class ClientApi : public ApiClass {
- public:
-  explicit ClientApi(ProtocolContext& protocol_context);
+LocalPort& Gateway::local_port() {
+  if (!local_port_) {
+    local_port_ = std::make_unique<LocalPort>(*this);
+  }
+  return *local_port_;
+}
 
-  Method<3, void(ClientId client_id, ServerId server_id, DataBuffer data)>
-      from_server_id;
-  Method<4, void(ClientId client_id, std::uint32_t endpoints_hash,
-                 DataBuffer data)>
-      from_server;
-};
-}  // namespace ae
-
-#endif  // GATEWAY_API_CLIENT_API_H_
+}  // namespace ae::gw

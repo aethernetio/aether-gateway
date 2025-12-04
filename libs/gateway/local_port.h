@@ -25,7 +25,7 @@
 #include "gateway/gw_stream.h"
 #include "gateway/api/client_api.h"
 
-namespace ae {
+namespace ae::gw {
 class Gateway;
 class LocalPort {
   friend class GatewayApiImpl;
@@ -81,6 +81,6 @@ class LocalPort {
   MultiSubscription out_data_subs_;
   MultiSubscription update_stream_subs_;
 };
-}  // namespace ae
+}  // namespace ae::gw
 
 #endif  // GATEWAY_LOCAL_PORT_H_

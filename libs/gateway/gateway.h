@@ -22,7 +22,7 @@
 #include "gateway/local_port.h"
 #include "gateway/server_stream_manager.h"
 
-namespace ae {
+namespace ae::gw {
 class Gateway : public Obj {
   AE_OBJECT(Gateway, Obj, 0)
   Gateway() = default;
@@ -45,6 +45,6 @@ class Gateway : public Obj {
   std::unique_ptr<ServerStreamManager> server_stream_manager_;
   std::unique_ptr<LocalPort> local_port_;
 };
-}  // namespace ae
+}  // namespace ae::gw
 
 #endif  // GATEWAY_GATEWAY_H_

@@ -37,6 +37,7 @@ if (CM_PLATFORM STREQUAL "ESP32")
 
   list(APPEND EXTRA_COMPONENT_DIRS
     "./libs/aether/aether"
+    "./libs/gateway"
     "./src")
   project(aether-gateway LANGUAGES CXX C ASM)
 else()
@@ -49,6 +50,8 @@ else()
     add_link_options(-fsanitize=address)
   endif()
 
+  add_subdirectory("libs/aether/aether" "aether")
+  add_subdirectory("libs/gateway" "gateway")
   add_subdirectory("src" "aether-gateway")
   # add_subdirectory("tests" "tests")
 endif()

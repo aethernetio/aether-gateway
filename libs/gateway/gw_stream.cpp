@@ -19,7 +19,7 @@
 #include "gateway/gateway.h"
 #include "gateway/server_stream_manager.h"
 
-namespace ae {
+namespace ae::gw {
 GwStream::GwStream(Gateway& gateway, ServerId server_id) : GwStream{gateway} {
   // TODO: add policy to select cache stream or not
   auto get_stream_action = gateway.server_stream_manager().GetStream(server_id);
@@ -63,4 +63,4 @@ GwStream::OutDataEvent::Subscriber GwStream::out_data_event() {
 
 void GwStream::Restream() { buffer_stream_.Restream(); }
 
-}  // namespace ae
+}  // namespace ae::gw

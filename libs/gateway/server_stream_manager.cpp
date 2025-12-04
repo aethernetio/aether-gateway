@@ -23,7 +23,7 @@
 #include "gateway/gateway.h"
 #include "gateway/server_stream.h"
 
-namespace ae {
+namespace ae::gw {
 namespace server_stream_manager_internal {
 class ExistingStreamGetAction : public StreamGetAction {
  public:
@@ -179,7 +179,9 @@ Server::ptr ServerStreamManager::BuildServer(ServerId server_id,
   auto server =
       aether->domain_->CreateObj<Server>(server_id, endpoints.endpoints);
   server->Register(aether->adapter_registry);
-  aether->AddServer(server);
+  if (server_id != 0) {
+    aether->AddServer(server);
+  }
   return server;
 }
 
@@ -208,4 +210,4 @@ ServerStreamManager::OpenCache() {
   return stream_cache_;
 }
 
-}  // namespace ae
+}  // namespace ae::gw

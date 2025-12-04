@@ -22,7 +22,7 @@
 #include "gateway/gateway.h"
 #include "gateway/api/gateway_api.h"
 
-namespace ae {
+namespace ae::gw {
 class GatewayApiImpl : public GatewayApi {
  public:
   explicit GatewayApiImpl(std::uint8_t device_id, LocalPort& local_port)
@@ -116,6 +116,8 @@ ByteIStream& LocalPort::OpenStream(Key const& key, ServeKind const& server) {
 }
 
 void LocalPort::OutData(Key const& key, DataBuffer const& data) {
+  AE_TELED_DEBUG("OutData get for device {} client {} with data {}",
+                 static_cast<int>(key.device_id), key.client_id, data);
   auto it = stream_store_.find(key);
   if (it == std::end(stream_store_)) {
     return;
@@ -148,4 +150,4 @@ void LocalPort::StreamState(Key const& key) {
     stream_store_.erase(it);
   }
 }
-}  // namespace ae
+}  // namespace ae::gw
