@@ -16,14 +16,7 @@ cmake_minimum_required(VERSION 3.16.0)
 
 list(APPEND gateway_srcs
             "main.cpp"
-            "gateway_server.cpp"
-            "gateway/server_stream.cpp"
-            "gateway/server_stream_manager.cpp"
-            "gateway/gw_stream.cpp"
-            "gateway/gateway.cpp"
-            "gateway/local_port.cpp"
-            "gateway/api/client_api.cpp"
-)
+            "gateway_server.cpp")
 
 list(APPEND lora_gateways_srcs
             "lora_gateways/dx_smart_lr02_gw.cpp"
@@ -32,13 +25,11 @@ list(APPEND lora_gateways_srcs
 if (NOT CM_PLATFORM)
   project("aether-gateway-app" VERSION "1.0.0" LANGUAGES C CXX)
 
-  add_subdirectory("../libs/aether/aether" aether)
-
   add_executable(${PROJECT_NAME} ${gateway_srcs}
                                  ${lora_gateways_srcs})
 
   target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-  target_link_libraries(${PROJECT_NAME} PRIVATE aether)
+  target_link_libraries(${PROJECT_NAME} PRIVATE aether aether-gateway)
 
   include(GNUInstallDirs)
   install(TARGETS ${PROJECT_NAME}
@@ -49,5 +40,5 @@ else()
       ${gateway_srcs}
       ${lora_gateways_srcs}
       INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
-      PRIV_REQUIRES aether)
+      PRIV_REQUIRES aether gateway)
 endif()

@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-#ifndef GATEWAY_API_CLIENT_API_H_
-#define GATEWAY_API_CLIENT_API_H_
+#ifndef SIM_GATEWAY_GW_SIM_DEVICE_PORT_H_
+#define SIM_GATEWAY_GW_SIM_DEVICE_PORT_H_
 
-#include <cstdint>
+#include "gateway/local_port.h"
 
-#include "aether/all.h"
+#include "sim-gateway/gw-sim-data-bus.h"
 
-namespace ae {
-class ClientApi : public ApiClass {
+namespace ae::gw::sim {
+class GwSimDevicePort final : public GatewayListener {
  public:
-  explicit ClientApi(ProtocolContext& protocol_context);
+  GwSimDevicePort(GwSimDataBus& gw_sim_data_bus, LocalPort& local_port);
+  ~GwSimDevicePort() override;
 
-  Method<3, void(ClientId client_id, ServerId server_id, DataBuffer data)>
-      from_server_id;
-  Method<4, void(ClientId client_id, std::uint64_t descriptor_hash,
-                 DataBuffer data)>
-      from_server;
+  void PushData(DeviceId device_id, DataBuffer const& data) override;
+
+ private:
+  GwSimDataBus* gw_sim_data_bus_;
+  LocalPort* local_port_;
+  Subscription output_sub_;
 };
-}  // namespace ae
+}  // namespace ae::gw::sim
 
-#endif  // GATEWAY_API_CLIENT_API_H_
+#endif  // SIM_GATEWAY_GW_SIM_DEVICE_PORT_H_

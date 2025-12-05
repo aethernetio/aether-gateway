@@ -126,7 +126,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: Aether_${{ matrix.config.name }}
+          name: AetherGateway_${{ matrix.config.name }}
           path: "build/*"
           include-hidden-files: true
           overwrite: true

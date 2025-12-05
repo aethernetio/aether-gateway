@@ -16,7 +16,7 @@
 
 #include "gateway/server_stream.h"
 
-namespace ae {
+namespace ae::gw {
 ServerStream::ServerStream(ActionContext action_context,
                            Server::ptr const& server)
     : action_context_{action_context},
@@ -45,4 +45,4 @@ ServerStream::OutDataEvent::Subscriber ServerStream::out_data_event() {
 
 void ServerStream::Restream() { buffer_stream_.Restream(); }
 
-}  // namespace ae
+}  // namespace ae::gw

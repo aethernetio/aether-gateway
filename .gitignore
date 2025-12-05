@@ -61,3 +61,4 @@ projects/intel_x86/linux/gcc/aether-client-cpp
 
 .updated
 CppProperties.json
+sdkconfig

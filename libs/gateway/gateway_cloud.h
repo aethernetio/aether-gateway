@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-#include "gateway/gateway.h"
+#ifndef GATEWAY_GATEWAY_CLOUD_H_
+#define GATEWAY_GATEWAY_CLOUD_H_
 
-namespace ae {
-Gateway::Gateway(Aether::ptr aether, Client::ptr client, Domain* domain)
-    : Obj{domain},
-      aether{std::move(aether)},
-      gateway_client{std::move(client)} {}
+#include "aether/cloud.h"
 
-ServerStreamManager& Gateway::server_stream_manager() {
-  if (!server_stream_manager_) {
-    server_stream_manager_ = std::make_unique<ServerStreamManager>(*this);
-  }
-  return *server_stream_manager_;
-}
-}  // namespace ae
+namespace ae::gw {
+class GatewayCloud final : public Cloud {
+  AE_OBJECT(GatewayCloud, Cloud, 0)
+  GatewayCloud() = default;
+
+ public:
+  explicit GatewayCloud(Domain* domain);
+
+  AE_OBJECT_REFLECT()
+};
+}  // namespace ae::gw
+
+#endif  // GATEWAY_GATEWAY_CLOUD_H_

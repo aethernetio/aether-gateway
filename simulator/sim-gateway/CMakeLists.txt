@@ -1,4 +1,4 @@
-# Copyright 2024 Aethernet Inc.
+# Copyright 2025 Aethernet Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required( VERSION 3.16 )
+cmake_minimum_required(VERSION 3.16.0)
 
-# for unit tests
-enable_testing()
+list(APPEND sim_gateway_srcs
+  "gw-sim-access-point.cpp"
+  "gw-sim-adapter.cpp"
+  "gw-sim-channel.cpp"
+  "gw-sim-data-bus.cpp"
+  "gw-sim-device.cpp"
+  "gw-sim-transport.cpp"
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/run)
-set(ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
-# enable doubles in unity tests
-add_compile_definitions("UNITY_INCLUDE_DOUBLE")
+  "gw-sim-device-port.cpp"
+)
 
-#dependancies
-if (NOT TARGET aether)
-  add_subdirectory("${ROOT_DIR}/libs/aether/aether" "aether")
-endif()
+project("sim-gateway" VERSION "1.0.0" LANGUAGES C CXX)
 
-#tests
+add_library(${PROJECT_NAME} STATIC ${sim_gateway_srcs})
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_link_libraries(${PROJECT_NAME} PUBLIC aether aether-gateway)

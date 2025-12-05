@@ -1,4 +1,4 @@
-# Copyright 2024 Aethernet Inc.
+# Copyright 2025 Aethernet Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required( VERSION 3.16 )
+cmake_minimum_required(VERSION 3.16.0)
 
-# for unit tests
-enable_testing()
+project(sim-alice-bob)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/run)
-set(ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
-# enable doubles in unity tests
-add_compile_definitions("UNITY_INCLUDE_DOUBLE")
+list(APPEND sim_alice_bob_srcs
+    sim-alice-bob.cpp
+)
 
-#dependancies
-if (NOT TARGET aether)
-  add_subdirectory("${ROOT_DIR}/libs/aether/aether" "aether")
-endif()
+add_executable(sim-alice-bob ${sim_alice_bob_srcs})
 
-#tests
+target_include_directories(sim-alice-bob PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_link_libraries(sim-alice-bob PRIVATE sim-gateway aether-gateway)
+
+add_test(NAME sim-alice-bob COMMAND $<TARGET_FILE:sim-alice-bob>)

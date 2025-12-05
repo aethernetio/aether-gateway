@@ -19,7 +19,7 @@
 
 #include "aether/all.h"
 
-namespace ae {
+namespace ae::gw {
 class GatewayApi : public ApiClassImpl<GatewayApi> {
  public:
   using ApiClassImpl::ApiClassImpl;
@@ -28,12 +28,12 @@ class GatewayApi : public ApiClassImpl<GatewayApi> {
   virtual void ToServerId(ClientId client_id, ServerId server_id,
                           DataBuffer data) = 0;
 
-  virtual void ToServer(ClientId client_id, ServerDescriptor server_descriptor,
+  virtual void ToServer(ClientId client_id, ServerEndpoints endpoints,
                         DataBuffer data) = 0;
 
   AE_METHODS(RegMethod<3, &GatewayApi::ToServerId>,
              RegMethod<4, &GatewayApi::ToServer>);
 };
-}  // namespace ae
+}  // namespace ae::gw
 
 #endif  // GATEWAY_API_GATEWAY_API_H_

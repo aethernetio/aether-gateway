@@ -14,17 +14,16 @@
 
 cmake_minimum_required( VERSION 3.16 )
 
-# for unit tests
+project(simulator)
+
 enable_testing()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/run)
-set(ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
-# enable doubles in unity tests
-add_compile_definitions("UNITY_INCLUDE_DOUBLE")
 
-#dependancies
-if (NOT TARGET aether)
-  add_subdirectory("${ROOT_DIR}/libs/aether/aether" "aether")
-endif()
+set(USER_CONFIG "${CMAKE_CURRENT_LIST_DIR}/user_config.h" CACHE STRING "" FORCE)
 
-#tests
+add_subdirectory(../libs/aether/aether aether)
+add_subdirectory(../libs/gateway gateway)
+add_subdirectory(./sim-gateway sim-gateway)
+
+add_subdirectory(./tests/sim-alice-bob)

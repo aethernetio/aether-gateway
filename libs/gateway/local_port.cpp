@@ -22,7 +22,7 @@
 #include "gateway/gateway.h"
 #include "gateway/api/gateway_api.h"
 
-namespace ae {
+namespace ae::gw {
 class GatewayApiImpl : public GatewayApi {
  public:
   explicit GatewayApiImpl(std::uint8_t device_id, LocalPort& local_port)
@@ -37,10 +37,10 @@ class GatewayApiImpl : public GatewayApi {
         .Write(std::move(data));
   }
 
-  void ToServer(ClientId client_id, ServerDescriptor server_descriptor,
+  void ToServer(ClientId client_id, ServerEndpoints server_endpoints,
                 DataBuffer data) override {
     // Write data to the stream
-    local_port_->OpenStream(device_id_, client_id, server_descriptor)
+    local_port_->OpenStream(device_id_, client_id, server_endpoints)
         .Write(std::move(data));
   }
 
@@ -52,15 +52,15 @@ class GatewayApiImpl : public GatewayApi {
 LocalPort::Key::Key(std::uint8_t did, ClientId cid, ServeKind const& server)
     : device_id{did},
       client_id{cid},
-      server_identity{
-          std::visit(reflect::OverrideFunc{
-                         [&](ServerId const& server) -> std::size_t {
-                           return static_cast<std::size_t>(server);
-                         },
-                         [&](ServerDescriptor const& server) -> std::size_t {
-                           return std::hash<ServerDescriptor>{}(server);
-                         }},
-                     server)} {}
+      server_identity{std::visit(
+          reflect::OverrideFunc{[&](ServerId const& server) {
+                                  return static_cast<std::uint32_t>(server);
+                                },
+                                [&](ServerEndpoints const& endpoints) {
+                                  return static_cast<std::uint32_t>(
+                                      std::hash<ServerEndpoints>{}(endpoints));
+                                }},
+          server)} {}
 
 bool operator<(LocalPort::Key const& a, LocalPort::Key const& b) {
   return std::tuple{a.device_id, a.client_id, a.server_identity} <
@@ -85,9 +85,9 @@ ByteIStream& LocalPort::OpenStream(std::uint8_t device_id, ClientId client_id,
   return OpenStream(Key{device_id, client_id, server_id}, server_id);
 }
 ByteIStream& LocalPort::OpenStream(std::uint8_t device_id, ClientId client_id,
-                                   ServerDescriptor const& server_descriptor) {
-  return OpenStream(Key{device_id, client_id, server_descriptor},
-                    server_descriptor);
+                                   ServerEndpoints const& server_endpoints) {
+  return OpenStream(Key{device_id, client_id, server_endpoints},
+                    server_endpoints);
 }
 
 ByteIStream& LocalPort::OpenStream(Key const& key, ServeKind const& server) {
@@ -116,8 +116,11 @@ ByteIStream& LocalPort::OpenStream(Key const& key, ServeKind const& server) {
 }
 
 void LocalPort::OutData(Key const& key, DataBuffer const& data) {
+  AE_TELED_DEBUG("OutData get for device {} client {} with data {}",
+                 static_cast<int>(key.device_id), key.client_id, data);
   auto it = stream_store_.find(key);
   if (it == std::end(stream_store_)) {
+    AE_TELED_ERROR("Unable to find stream for answear");
     return;
   }
   // update the used time
@@ -128,12 +131,9 @@ void LocalPort::OutData(Key const& key, DataBuffer const& data) {
                  [&](ServerId server_id) {
                    api_context->from_server_id(key.client_id, server_id, data);
                  },
-                 [&](ServerDescriptor const& server_descriptor) {
-                   api_context->from_server(
-                       key.client_id,
-                       static_cast<std::uint64_t>(
-                           std::hash<ServerDescriptor>{}(server_descriptor)),
-                       data);
+                 [&](ServerEndpoints const&) {
+                   api_context->from_server(key.client_id, key.server_identity,
+                                            data);
                  }},
              it->second.server);
 
@@ -151,4 +151,4 @@ void LocalPort::StreamState(Key const& key) {
     stream_store_.erase(it);
   }
 }
-}  // namespace ae
+}  // namespace ae::gw

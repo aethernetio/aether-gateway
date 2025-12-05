@@ -25,13 +25,13 @@
 #include "gateway/gw_stream.h"
 #include "gateway/api/client_api.h"
 
-namespace ae {
+namespace ae::gw {
 class Gateway;
 class LocalPort {
   friend class GatewayApiImpl;
 
  public:
-  using ServeKind = std::variant<ServerId, ServerDescriptor>;
+  using ServeKind = std::variant<ServerId, ServerEndpoints>;
 
   struct Key {
     Key() = default;
@@ -39,7 +39,7 @@ class LocalPort {
 
     std::uint8_t device_id;
     ClientId client_id;
-    std::size_t server_identity;
+    std::uint32_t server_identity;
   };
 
   struct StreamStore {
@@ -66,7 +66,7 @@ class LocalPort {
   ByteIStream& OpenStream(std::uint8_t device_id, ClientId client_id,
                           ServerId server_id);
   ByteIStream& OpenStream(std::uint8_t device_id, ClientId client_id,
-                          ServerDescriptor const& server_descriptor);
+                          ServerEndpoints const& server_endpoints);
   ByteIStream& OpenStream(Key const& key, ServeKind const& server);
 
   void OutData(Key const& key, DataBuffer const& data);
@@ -81,6 +81,6 @@ class LocalPort {
   MultiSubscription out_data_subs_;
   MultiSubscription update_stream_subs_;
 };
-}  // namespace ae
+}  // namespace ae::gw
 
 #endif  // GATEWAY_LOCAL_PORT_H_
