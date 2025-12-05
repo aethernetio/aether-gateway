@@ -17,8 +17,6 @@
 
 namespace ae::gw {
 ClientApi::ClientApi(ProtocolContext& protocol_context)
-    : ApiClass{protocol_context},
-      from_server_id{protocol_context},
-      from_server{protocol_context} {}
+    : ApiClass{protocol_context}, from_server{protocol_context} {}
 
 }  // namespace ae::gw
