@@ -47,8 +47,8 @@ Aether::ptr const& GwSimAccessPoint::aether() const { return aether_; }
 
 GwSimDevice& GwSimAccessPoint::gw_device() {
   if (!gw_device_) {
-    gw_device_ =
-        std::make_unique<GwSimDevice>(adapter_.as<GwSimAdapter>()->data_bus());
+    gw_device_ = std::make_unique<GwSimDevice>(
+        *aether_, adapter_.as<GwSimAdapter>()->data_bus());
   }
   return *gw_device_;
 }

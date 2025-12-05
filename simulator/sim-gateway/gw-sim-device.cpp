@@ -19,8 +19,20 @@
 #include "aether/tele/tele.h"
 
 namespace ae::gw::sim {
-GwSimDevice::GwSimDevice(GwSimDataBus& gw_sim_data_bus)
-    : gw_sim_data_bus_{&gw_sim_data_bus},
+namespace gw_sim_device_internal {
+class GwStreamWriteAction final : public StreamWriteAction {
+ public:
+  explicit GwStreamWriteAction(ActionContext action_context)
+      : StreamWriteAction{action_context} {
+    state_ = State::kDone;
+  }
+};
+}  // namespace gw_sim_device_internal
+
+GwSimDevice::GwSimDevice(ActionContext action_context,
+                         GwSimDataBus& gw_sim_data_bus)
+    : action_context_{action_context},
+      gw_sim_data_bus_{&gw_sim_data_bus},
       device_id_{gw_sim_data_bus_->RegDeviceListener(this)},
       gateway_api_{protocol_context_},
       gateway_client_api_{protocol_context_} {}
@@ -29,29 +41,38 @@ GwSimDevice::~GwSimDevice() {
   gw_sim_data_bus_->RemoveDeviceListener(device_id_);
 }
 
-void GwSimDevice::PublishData(ClientId client_id, ServerId server_id,
-                              DataBuffer const& data) {
+ActionPtr<StreamWriteAction> GwSimDevice::ToServer(ClientId client_id,
+                                                   ServerId server_id,
+                                                   DataBuffer&& data) {
   auto api = ApiContext{gateway_api_};
-  api->to_server_id(client_id, server_id, data);
+  api->to_server_id(client_id, server_id, std::move(data));
   DataBuffer packet = std::move(api);
 
   AE_TELED_DEBUG("Publish from device_id {} data {}",
                  static_cast<int>(device_id_), packet);
 
   gw_sim_data_bus_->PublishDeviceData(device_id_, packet);
+  return ActionPtr<gw_sim_device_internal::GwStreamWriteAction>{
+      action_context_};
 }
 
-void GwSimDevice::PublishData(ClientId client_id,
-                              ServerEndpoints const& server_endpoints,
-                              DataBuffer const& data) {
+ActionPtr<StreamWriteAction> GwSimDevice::ToServer(
+    ClientId client_id, ServerEndpoints const& server_endpoints,
+    DataBuffer&& data) {
   auto api = ApiContext{gateway_api_};
-  api->to_server(client_id, server_endpoints, data);
+  api->to_server(client_id, server_endpoints, std::move(data));
   DataBuffer packet = std::move(api);
 
   AE_TELED_DEBUG("Publish from device_id {} data {}",
                  static_cast<int>(device_id_), packet);
 
   gw_sim_data_bus_->PublishDeviceData(device_id_, packet);
+  return ActionPtr<gw_sim_device_internal::GwStreamWriteAction>{
+      action_context_};
+}
+
+GwSimDevice::FromServerEvent::Subscriber GwSimDevice::from_server_event() {
+  return gateway_client_api_.from_server_event();
 }
 
 void GwSimDevice::PushData(DataBuffer const& data) {
@@ -59,13 +80,4 @@ void GwSimDevice::PushData(DataBuffer const& data) {
   auto parser = ApiParser{protocol_context_, data};
   parser.Parse(gateway_client_api_);
 }
-
-GwSimDevice::FromServerIdEvent::Subscriber GwSimDevice::from_server_id_event() {
-  return gateway_client_api_.from_server_id_event();
-}
-
-GwSimDevice::FromServerEvent::Subscriber GwSimDevice::from_server_event() {
-  return gateway_client_api_.from_server_event();
-}
-
 }  // namespace ae::gw::sim

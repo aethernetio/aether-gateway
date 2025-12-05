@@ -20,7 +20,6 @@ list(APPEND sim_gateway_srcs
   "gw-sim-channel.cpp"
   "gw-sim-data-bus.cpp"
   "gw-sim-device.cpp"
-  "gw-sim-transport.cpp"
 
   "gw-sim-device-port.cpp"
 )
