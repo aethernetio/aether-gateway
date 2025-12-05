@@ -17,8 +17,6 @@
 #ifndef GATEWAY_API_CLIENT_API_H_
 #define GATEWAY_API_CLIENT_API_H_
 
-#include <cstdint>
-
 #include "aether/all.h"
 
 namespace ae::gw {
@@ -26,11 +24,7 @@ class ClientApi : public ApiClass {
  public:
   explicit ClientApi(ProtocolContext& protocol_context);
 
-  Method<3, void(ClientId client_id, ServerId server_id, DataBuffer data)>
-      from_server_id;
-  Method<4, void(ClientId client_id, std::uint32_t endpoints_hash,
-                 DataBuffer data)>
-      from_server;
+  Method<3, void(ClientId client_id, DataBuffer data)> from_server;
 };
 }  // namespace ae::gw
 

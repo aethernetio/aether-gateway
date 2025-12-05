@@ -19,42 +19,33 @@
 
 #include <cstdint>
 
-#include "sim-gateway/sim-gateway-config.h"
-
 #include "aether/types/server_id.h"
 #include "aether/types/client_id.h"
 #include "aether/gateway_api/gateway_api.h"
-#include "aether/work_cloud_api/server_descriptor.h"
+#include "aether/transport/gateway/gateway_device.h"
 
 #include "sim-gateway/gw-sim-data-bus.h"
 
 namespace ae::gw::sim {
-class GwSimDevice final : public DeviceListener {
+class GwSimDevice final : public IGatewayDevice, public DeviceListener {
  public:
-  using FromServerIdEvent =
-      typename decltype(std::declval<GatewayClientApi>()
-                            .from_server_id_event())::EventType;
-  using FromServerEvent =
-      typename decltype(std::declval<GatewayClientApi>()
-                            .from_server_event())::EventType;
-
-  explicit GwSimDevice(GwSimDataBus& gw_sim_data_bus);
+  explicit GwSimDevice(ActionContext action_context,
+                       GwSimDataBus& gw_sim_data_bus);
   ~GwSimDevice() override;
 
-  /**
-   * \brief Publish data from client to server.
-   */
-  void PublishData(ClientId client_id, ServerId server_id,
-                   DataBuffer const& data);
-  void PublishData(ClientId client_id, ServerEndpoints const& server_endpoints,
-                   DataBuffer const& data);
+  ActionPtr<StreamWriteAction> ToServer(ClientId client_id, ServerId server_id,
+                                        DataBuffer&& data) override;
+
+  ActionPtr<StreamWriteAction> ToServer(ClientId client_id,
+                                        ServerEndpoints const& server_endpoints,
+                                        DataBuffer&& data) override;
+
+  FromServerEvent::Subscriber from_server_event() override;
 
   void PushData(DataBuffer const& data) override;
 
-  FromServerIdEvent::Subscriber from_server_id_event();
-  FromServerEvent::Subscriber from_server_event();
-
  private:
+  ActionContext action_context_;
   GwSimDataBus* gw_sim_data_bus_;
   DeviceId device_id_;
 

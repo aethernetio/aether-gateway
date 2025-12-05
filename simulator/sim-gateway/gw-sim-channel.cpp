@@ -17,8 +17,7 @@
 #include "sim-gateway/gw-sim-channel.h"
 
 #include "aether/types/state_machine.h"
-
-#include "sim-gateway/gw-sim-transport.h"
+#include "aether/transport/gateway/gateway_transport.h"
 
 namespace ae::gw::sim {
 namespace gw_sim_channel_internal {
@@ -78,12 +77,11 @@ class GwSimTransportBuildAction final : public TransportBuilderAction {
     assert(server && "Server should be alive");
 
     if (server->server_id == 0) {
-      transport_stream_ = std::make_unique<GwSimTransport>(
-          action_context_, ServerEndpoints{server->endpoints},
-          access_point_->gw_device());
+      transport_stream_ = std::make_unique<GatewayTransport>(
+          ServerEndpoints{server->endpoints}, access_point_->gw_device());
     } else {
-      transport_stream_ = std::make_unique<GwSimTransport>(
-          action_context_, server->server_id, access_point_->gw_device());
+      transport_stream_ = std::make_unique<GatewayTransport>(
+          server->server_id, access_point_->gw_device());
     }
     state_ = State::kResult;
   }

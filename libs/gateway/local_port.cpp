@@ -127,16 +127,7 @@ void LocalPort::OutData(Key const& key, DataBuffer const& data) {
   it->second.last_used = Now();
 
   auto api_context = ApiContext{client_api_};
-  std::visit(reflect::OverrideFunc{
-                 [&](ServerId server_id) {
-                   api_context->from_server_id(key.client_id, server_id, data);
-                 },
-                 [&](ServerEndpoints const&) {
-                   api_context->from_server(key.client_id, key.server_identity,
-                                            data);
-                 }},
-             it->second.server);
-
+  api_context->from_server(key.client_id, data);
   output_event_.Emit(key.device_id, DataBuffer{std::move(api_context)});
 }
 
