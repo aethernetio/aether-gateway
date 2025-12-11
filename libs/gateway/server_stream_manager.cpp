@@ -110,11 +110,11 @@ class RequestServerStreamGetAction : public StreamGetAction {
           assert(!servers.empty() && "Servers should not be empty on result");
 
           auto const& sd = servers.front();
-          std::vector<UnifiedAddress> endpoints;
+          std::vector<Endpoint> endpoints;
           for (auto const& ipp : sd.ips) {
             for (auto const& proto_port : ipp.protocol_and_ports) {
-              endpoints.emplace_back(IpAddressPortProtocol{
-                  {ipp.ip, proto_port.port}, proto_port.protocol});
+              endpoints.emplace_back(
+                  Endpoint{{ipp.ip, proto_port.port}, proto_port.protocol});
             }
           }
 
